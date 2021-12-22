@@ -5,6 +5,12 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const User = require('../model/user')
 const auth = require('../middleware/auth')
+const uuid = require('uuid')
+const { nanoid } = require('nanoid')
+
+router.get('/u',async (req, res) => {
+    res.send(nanoid(6))
+})
 
 router.get('/', (req, res) => {
     res.status(200).send({
@@ -31,7 +37,8 @@ router.post('/register', async (req, res) => {
             firstName,
             lastName,
             email: email.toLowerCase(),
-            password: encryptedPassword
+            password: encryptedPassword,
+            myMateId: nanoid(6)
         })
 
         const token = jwt.sign(
