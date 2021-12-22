@@ -101,7 +101,7 @@ router.post('/logout', auth, async (req, res) => {
     })
 })
 
-router.get('/', auth, async (req, res) => {
+router.get('/welcome', auth, async (req, res) => {
     res.status(200).send("Welcome")
 })
 
