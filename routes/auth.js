@@ -6,6 +6,12 @@ const bcrypt = require('bcryptjs')
 const User = require('../model/user')
 const auth = require('../middleware/auth')
 
+router.get('/', (req, res) => {
+    res.status(200).send({
+        message: "Welcome to my mate auth API"
+    })
+})
+
 router.post('/register', async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body
