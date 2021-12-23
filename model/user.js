@@ -20,7 +20,24 @@ const userSchema = new mongoose.Schema({
     },
     myMateId: {
         type: String
-    }, 
+    },
+    roomMates: [
+        {
+            firstName: {
+                type: String
+            }, lastName: {
+                type: String
+            }, email: {
+                type: String
+            }, mateId: {
+                type: String
+            }, status: {
+                type: String,
+                enum: ['PENDING', 'APPROVED'],
+                default: 'PENDING'
+            }
+        }
+    ],
     token: {
         type: String
     }

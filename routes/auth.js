@@ -5,8 +5,9 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const User = require('../model/user')
 const auth = require('../middleware/auth')
-const uuid = require('uuid')
+// const uuid = require('uuid')
 const { nanoid } = require('nanoid')
+const authControllers = require('../controllers/authControllers')
 
 router.get('/u',async (req, res) => {
     res.send(nanoid(6))
@@ -18,95 +19,11 @@ router.get('/', (req, res) => {
     })
 })
 
-router.post('/register', async (req, res) => {
-    try {
-        const { firstName, lastName, email, password } = req.body
+router.post('/register', authControllers.registerAuth)
 
-        if (!(email && password && firstName && lastName)) {
-            res.status(400).send("All input is required")
-        }
+router.post('/login', authControllers.loginAuth)
 
-        const oldUser = await User.findOne({ email })
-        if(oldUser) {
-            return res.status(409).send("User already Exist. Please Login")
-        }
-
-        let encryptedPassword = await bcrypt.hash(password, 10)
-
-        const user = await User.create({
-            firstName,
-            lastName,
-            email: email.toLowerCase(),
-            password: encryptedPassword,
-            myMateId: nanoid(6)
-        })
-
-        const token = jwt.sign(
-            { user_id: user._id, email },
-            process.env.TOKEN_KEY,
-            {
-                expiresIn: "2h"
-            }
-        )
-        user.token = token
-        res.status(200).send(user)
-    } catch (e) {
-        console.log("Error while registeringn the user", e)
-        res.status(400).send({
-            success: false,
-            message: e.message
-        })
-    }
-})
-
-router.post('/login',async (req, res) => {
-    try {
-        const { email, password } = req.body
-
-        if (!(email && password)) {
-            res.status(400).send("All input is required")
-        }
-
-        const user = await User.findOne({ email })
-
-        if (user && (await bcrypt.compare(password, user.password))) {
-            //Create token
-
-            const token = jwt.sign(
-                { user_id: user._id, email },
-                process.env.TOKEN_KEY,
-                {
-                    expiresIn: "2h"
-                }
-            )
-            user.token = token
-
-            res.status(200).send(user)
-        }
-    } catch (e) {
-        console.log(err)
-        res.status(400).send({
-            success: false,
-            messager: e.message
-        })
-    }
-})
-
-router.post('/logout', auth, async (req, res) => {
-    const authHeader = req.headers["x-access-token"]
-
-    jwt.sign(authHeader, "", { expiresIn: 1 }, (logout, err) => {
-        if(logout) {
-            res.send({
-                msg: 'You have been Logged Out'
-            })
-        } else {
-            res.send({
-                msg: 'Error'
-            })
-        }
-    })
-})
+router.post('/logout', auth, authControllers.logoutAuth)
 
 router.get('/welcome', auth, async (req, res) => {
     res.status(200).send("Welcome")
