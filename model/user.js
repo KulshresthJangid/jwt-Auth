@@ -19,25 +19,32 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     myMateId: {
-        type: String
+        type: String,
+        require: true,
+        index: true,
+        sparse: true
     },
-    roomMates: [
+    recievedRequests: [
         {
-            firstName: {
-                type: String
-            }, lastName: {
-                type: String
-            }, email: {
-                type: String
-            }, mateId: {
-                type: String
-            }, status: {
+            myMateId: {
                 type: String,
-                enum: ['PENDING', 'APPROVED'],
-                default: 'PENDING'
+                unique: true
+            }, acceptStatus: {
+                type: Boolean,
+                default: false
             }
         }
-    ],
+    ],sendedRequests: [
+        {
+            myMateId: {
+                type: String,
+                unique: true
+            }, acceptStatus: {
+                type: Boolean,
+                default: false
+            }
+        }
+    ] , 
     token: {
         type: String
     }

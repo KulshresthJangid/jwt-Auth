@@ -28,7 +28,8 @@ exports.registerAuth = async(req, res) => {
             password: encryptedPassword,
             myMateId: nanoid(6)
         })
-
+        const id = user.myMateId
+        console.log("-------------------------------------------------", id)
         const token = jwt.sign(
             { user_id: user._id, email },
             process.env.TOKEN_KEY,
@@ -41,7 +42,8 @@ exports.registerAuth = async(req, res) => {
             token: user.token,
             firstName: user.firstName,
             lastName: user.lastName,
-            email: user.email
+            email: user.email,
+            myMateId: user.myMateId
         })
         res.status(200).send(user)
     } catch (e) {
@@ -85,7 +87,8 @@ exports.loginAuth = async (req, res) => {
                 token: user.token,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                email: user.email
+                email: user.email,
+                myMateId: user.myMateId
             })
             res.status(200).send(user)
         }
@@ -103,7 +106,7 @@ exports.logoutAuth = async (req, res) => {
 
     jwt.sign(authHeader, "", { expiresIn: 1 }, (logout, err) => {
         if(logout) {
-            res.clearCookie("thisiskey").send({
+            res.clearCookie(process.env.COOKIES_KEY).send({
                 msg: 'You have been Logged Out'
             })
         } else {
